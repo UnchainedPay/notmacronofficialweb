@@ -397,7 +397,7 @@ function Tokenomics() {
           <div className="tokenomics-tag">Supply</div>
           <div className="tokenomics-supply">
             1,000,000,000{" "}
-            <span className="tokenomics-symbol">$NOTMACRON</span>
+            <span className="tokenomics-symbol">$NTM</span>
           </div>
           <p>
             100% minted and launched on Pump.fun. No presale, no team
@@ -448,7 +448,7 @@ function HowToBuy() {
         <StepCard
           step="3"
           title="Embrace the chaos"
-          text="Swap SOL for $NOTMACRON, join the Telegram, and watch the green chaos unfold."
+          text="Swap SOL for $NTM, join the Telegram, and watch the green chaos unfold."
         />
       </div>
     </section>
