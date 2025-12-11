@@ -1,10 +1,13 @@
-import React from "react";
+import React from "react"; 
 import "./index.css";
 import useTokenStats from "./hooks/useTokenStats";
 import useTokenHistory from "./hooks/useTokenHistory";
 
-const PUMPFUN_LINK = "https://pump.fun/your-token-here"; // TODO: replace
-const DEXSCREENER_LINK = "https://dexscreener.com/";     // TODO: replace
+// ✅ Correct links
+const PUMPFUN_LINK =
+  "https://pump.fun/coin/AK5DJxfLQjJugMNQvhTaW3RSa9TFWwe669Bqs3dxpump";
+const DEXSCREENER_LINK =
+  "https://dexscreener.com/solana/AK5DJxfLQjJugMNQvhTaW3RSa9TFWwe669Bqs3dxpump";
 
 const TWITTER_URL = import.meta.env.VITE_TWITTER_URL;
 const TELEGRAM_URL = import.meta.env.VITE_TELEGRAM_URL;
@@ -253,11 +256,7 @@ function StatsSection({ stats, loading, error, contract }) {
         />
         <StatCard
           label="Holders"
-          value={
-            stats.holders
-              ? stats.holders.toLocaleString()
-              : "Soon™"
-          }
+          value={stats.holders ? stats.holders.toLocaleString() : "Soon™"}
         />
       </div>
     </section>
@@ -291,17 +290,15 @@ function EvolutionSection() {
     const timeSpan = maxTime - minTime || 1;
     const priceSpan = maxPrice - minPrice || 1;
 
-    const X_PAD = 6;  // padding horizontal
+    const X_PAD = 6; // padding horizontal
     const Y_PAD = 10; // padding vertical
 
     const mapped = points.map((p) => {
       const x =
-        X_PAD +
-        ((p.time - minTime) / timeSpan) * (100 - 2 * X_PAD);
+        X_PAD + ((p.time - minTime) / timeSpan) * (100 - 2 * X_PAD);
       const y =
         Y_PAD +
-        (1 - (p.price - minPrice) / priceSpan) *
-          (100 - 2 * Y_PAD);
+        (1 - (p.price - minPrice) / priceSpan) * (100 - 2 * Y_PAD);
       return { x, y };
     });
 
@@ -316,11 +313,7 @@ function EvolutionSection() {
     areaPath =
       `M ${first.x.toFixed(2)} ${100 - Y_PAD}` +
       ` L ${first.x.toFixed(2)} ${first.y.toFixed(2)}` +
-      mapped
-        .map(
-          (p) => ` L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`
-        )
-        .join("") +
+      mapped.map((p) => ` L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join("") +
       ` L ${last.x.toFixed(2)} ${100 - Y_PAD}` +
       " Z";
   }
@@ -421,11 +414,7 @@ function EvolutionSection() {
               ))}
 
               {/* zone remplie */}
-              <path
-                d={areaPath}
-                fill="url(#evo-area)"
-                stroke="none"
-              />
+              <path d={areaPath} fill="url(#evo-area)" stroke="none" />
 
               {/* courbe prix */}
               <path
@@ -460,8 +449,7 @@ function Tokenomics() {
         <div className="tokenomics-main">
           <div className="tokenomics-tag">Supply</div>
           <div className="tokenomics-supply">
-            1,000,000,000{" "}
-            <span className="tokenomics-symbol">$NTM</span>
+            1,000,000,000 <span className="tokenomics-symbol">$NTM</span>
           </div>
           <p>
             100% minted and launched on Pump.fun. No presale, no team
