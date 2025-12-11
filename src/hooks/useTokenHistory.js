@@ -64,18 +64,29 @@ export default function useTokenHistory() {
 
         const json = await res.json();
 
-        // Adapter selon la structure retournée par BirdEye
-        const raw =
-          json?.data && Array.isArray(json.data)
-            ? json.data
-            : Array.isArray(json)
-            ? json
-            : [];
+        // --- ⬇️ CHANGEMENT IMPORTANT ICI ⬇️ ---
+        // BirdEye renvoie typiquement: { success: true, data: { items: [...] } }
+        let raw = [];
+
+        if (Array.isArray(json?.data?.items)) {
+          raw = json.data.items;
+        } else if (Array.isArray(json?.data)) {
+          raw = json.data;
+        } else if (Array.isArray(json)) {
+          raw = json;
+        } else {
+          raw = [];
+        }
+        // --- ⬆️ --------------------------- ⬆️ ---
 
         const mapped = raw
           .map((item) => {
-            const t = toNumber(item.unixTime ?? item.timestamp ?? item.time);
-            const p = toNumber(item.value ?? item.price ?? item.priceUsd);
+            const t = toNumber(
+              item.unixTime ?? item.timestamp ?? item.time
+            );
+            const p = toNumber(
+              item.value ?? item.price ?? item.priceUsd
+            );
             if (!t || !p) return null;
             return { time: t, price: p };
           })
@@ -108,7 +119,7 @@ export default function useTokenHistory() {
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
     };
-  }, [enabled]);
+  }, [enabled, CONTRACT_ADDRESS, BIRDEYE_API_KEY]);
 
   return { points, loading, error, enabled };
 }
