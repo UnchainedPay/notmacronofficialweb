@@ -278,7 +278,10 @@ function EvolutionSection() {
 
   const hasData = points && points.length > 1;
 
-  let pathPoints = "";
+  // On prépare les points normalisés dans le SVG avec un padding
+  let linePath = "";
+  let areaPath = "";
+
   if (hasData) {
     const minTime = points[0].time;
     const maxTime = points[points.length - 1].time;
@@ -288,13 +291,38 @@ function EvolutionSection() {
     const timeSpan = maxTime - minTime || 1;
     const priceSpan = maxPrice - minPrice || 1;
 
-    pathPoints = points
-      .map((p) => {
-        const x = ((p.time - minTime) / timeSpan) * 100;
-        const y = (1 - (p.price - minPrice) / priceSpan) * 100;
-        return `${x.toFixed(2)},${y.toFixed(2)}`;
-      })
+    const X_PAD = 6;  // padding horizontal
+    const Y_PAD = 10; // padding vertical
+
+    const mapped = points.map((p) => {
+      const x =
+        X_PAD +
+        ((p.time - minTime) / timeSpan) * (100 - 2 * X_PAD);
+      const y =
+        Y_PAD +
+        (1 - (p.price - minPrice) / priceSpan) *
+          (100 - 2 * Y_PAD);
+      return { x, y };
+    });
+
+    // Ligne principale
+    linePath = mapped
+      .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
       .join(" ");
+
+    // Zone remplie (chart style)
+    const first = mapped[0];
+    const last = mapped[mapped.length - 1];
+    areaPath =
+      `M ${first.x.toFixed(2)} ${100 - Y_PAD}` +
+      ` L ${first.x.toFixed(2)} ${first.y.toFixed(2)}` +
+      mapped
+        .map(
+          (p) => ` L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`
+        )
+        .join("") +
+      ` L ${last.x.toFixed(2)} ${100 - Y_PAD}` +
+      " Z";
   }
 
   return (
@@ -358,19 +386,55 @@ function EvolutionSection() {
               preserveAspectRatio="none"
               style={{ width: "100%", height: "100%" }}
             >
-              {/* Baseline */}
-              <polyline
-                points="0,100 100,100"
-                fill="none"
-                stroke="rgba(148,163,184,0.4)"
-                strokeWidth="0.6"
+              <defs>
+                <linearGradient id="evo-bg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(15,23,42,0.9)" />
+                  <stop offset="100%" stopColor="rgba(15,23,42,1)" />
+                </linearGradient>
+                <linearGradient id="evo-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(74,222,128,0.25)" />
+                  <stop offset="100%" stopColor="rgba(74,222,128,0)" />
+                </linearGradient>
+              </defs>
+
+              {/* fond */}
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                rx="6"
+                fill="url(#evo-bg)"
               />
-              {/* Price line */}
-              <polyline
-                points={pathPoints}
+
+              {/* petites lignes de grid */}
+              {[20, 40, 60, 80].map((y) => (
+                <line
+                  key={y}
+                  x1="0"
+                  y1={y}
+                  x2="100"
+                  y2={y}
+                  stroke="rgba(148,163,184,0.12)"
+                  strokeWidth="0.4"
+                />
+              ))}
+
+              {/* zone remplie */}
+              <path
+                d={areaPath}
+                fill="url(#evo-area)"
+                stroke="none"
+              />
+
+              {/* courbe prix */}
+              <path
+                d={linePath}
                 fill="none"
                 stroke="#4ade80"
-                strokeWidth="1.2"
+                strokeWidth="1"
+                strokeLinejoin="round"
+                strokeLinecap="round"
               />
             </svg>
           ) : (
